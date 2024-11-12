@@ -27,18 +27,21 @@ export const imageRouter = {
   getImages: publicProcedure.query(async () => {
     try {
       const images = await Image.find()
-        .sort({ createdAt: -1 }) // Sort by newest first
-        .lean(); // Convert to plain JavaScript objects
+        .sort({ createdAt: -1 })
+        .lean()
+        .exec();
 
       return {
         success: true,
         images: images.map((image) => ({
           ...image,
-          _id: image._id.toString(), // Convert ObjectId to string
+          _id: image._id.toString(),
+          createdAt: image.createdAt.toISOString(),
         })),
       };
     } catch (error) {
-      throw new Error("Failed to fetch images", { cause: error });
+      console.error('Image fetch error:', error);
+      throw new Error("Failed to fetch images");
     }
   }),
 } satisfies TRPCRouterRecord;

@@ -20,10 +20,12 @@ export const generateRouter = {
         },
       });
 
-      // Create new image document in mongodb
+      // Cast output to array and get first item
+      const imageUrl = (output as string[])[0];
+
       const image = await Image.create({
         prompt: input.prompt,
-        imageUrl: (output as string[])[0], // Cast output to string[] and get first URL
+        imageUrl,
       });
 
       return {
