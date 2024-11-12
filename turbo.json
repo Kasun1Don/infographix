@@ -61,7 +61,8 @@
     "AUTH_REDIRECT_PROXY_URL",
     "NEXT_PUBLIC_DEPLOYMENT_ENVIRONMENT",
     "AUTH_SECRET",
-    "PORT"
+    "PORT",
+    "REPLICATE_API_TOKEN"
   ],
   "globalPassThroughEnv": [
     "NODE_ENV",
