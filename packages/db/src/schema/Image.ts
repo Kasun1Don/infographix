@@ -1,10 +1,10 @@
 import {
-    getModelForClass,
-    modelOptions,
-    prop,
-    ReturnModelType,
-    mongoose,
-  } from "@typegoose/typegoose";
+  getModelForClass,
+  modelOptions,
+  mongoose,
+  prop,
+  ReturnModelType,
+} from "@typegoose/typegoose";
 
 @modelOptions({ schemaOptions: { collection: "images" } })
 export class ImageClass {
@@ -20,7 +20,6 @@ export class ImageClass {
   @prop({ default: Date.now })
   public createdAt!: Date;
 }
-
 
 export const Image =
   (mongoose.models.ImageClass as

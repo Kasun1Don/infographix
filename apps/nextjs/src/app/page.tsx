@@ -1,10 +1,13 @@
-'use client';
-import { HydrateClient } from "~/trpc/server";
-import { useState, useEffect } from 'react';
-import { Button } from '@acme/ui/button';
-import { Skeleton } from '@acme/ui/skeleton';
-import { Download, Heart } from 'lucide-react';
+"use client";
+
+import { useEffect, useState } from "react";
+import { Download, Heart } from "lucide-react";
+
+import { Button } from "@acme/ui/button";
+import { Skeleton } from "@acme/ui/skeleton";
+
 import { api } from "~/trpc/react";
+import { HydrateClient } from "~/trpc/server";
 
 interface Image {
   _id: string;
@@ -14,14 +17,17 @@ interface Image {
 }
 
 export default function HomePage() {
-  const [prompt, setPrompt] = useState(''); 
+  const [prompt, setPrompt] = useState("");
   const [images, setImages] = useState<Image[]>([]);
   const [generating, setGenerating] = useState(false);
 
   // auto-refetch images every 30 seconds
-  const { data: imagesData, isLoading } = api.image.getImages.useQuery(undefined, {
-    refetchInterval: 30000,
-  });
+  const { data: imagesData, isLoading } = api.image.getImages.useQuery(
+    undefined,
+    {
+      refetchInterval: 30000,
+    },
+  );
 
   useEffect(() => {
     if (imagesData?.images) {
@@ -32,8 +38,11 @@ export default function HomePage() {
   const generateMutation = api.generate.generate.useMutation({
     onSuccess: (data) => {
       if (data.success) {
-        setImages((prev) => [{...data.image, _id: data.image._id.toString()}, ...prev]);
-        setPrompt('');
+        setImages((prev) => [
+          { ...data.image, _id: data.image._id.toString() },
+          ...prev,
+        ]);
+        setPrompt("");
       }
     },
   });
@@ -44,7 +53,7 @@ export default function HomePage() {
     try {
       await generateMutation.mutateAsync({ prompt });
     } catch (error) {
-      console.error('Error generating image:', error);
+      console.error("Error generating image:", error);
     } finally {
       setGenerating(false);
     }
@@ -52,12 +61,12 @@ export default function HomePage() {
 
   const likeMutation = api.image.like.useMutation({
     onMutate: (likedImage) => {
-      setImages(prev => 
-        prev.map(img => 
-          img._id === likedImage.imageId 
+      setImages((prev) =>
+        prev.map((img) =>
+          img._id === likedImage.imageId
             ? { ...img, likes: img.likes + 1 }
-            : img
-        )
+            : img,
+        ),
       );
     },
   });
@@ -66,7 +75,7 @@ export default function HomePage() {
     try {
       await likeMutation.mutateAsync({ imageId });
     } catch (error) {
-      console.error('Error liking image:', error);
+      console.error("Error liking image:", error);
     }
   };
 
@@ -80,47 +89,45 @@ export default function HomePage() {
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               placeholder="Enter your prompt..."
-              className="flex-1 px-4 py-2 border rounded-lg"
+              className="flex-1 rounded-lg border px-4 py-2"
               disabled={generating}
             />
             <Button type="submit" disabled={generating}>
-              {generating ? 'Generating...' : 'Generate'}
+              {generating ? "Generating..." : "Generate"}
             </Button>
           </div>
         </form>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {isLoading ? (
-            Array.from({ length: 6 }).map((_, i) => (
-              <Skeleton key={i} className="h-[300px] w-full" />
-            ))
-          ) : (
-            images.map((image) => (
-              <div key={image._id} className="relative group">
-                <img
-                  src={image.imageUrl}
-                  alt={image.prompt}
-                  className="w-full h-[300px] object-cover rounded-lg"
-                />
-                <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-lg flex items-center justify-center gap-4">
-                  <Button
-                    size="icon"
-                    variant="secondary"
-                    onClick={() => window.open(image.imageUrl, '_blank')}
-                  >
-                    <Download className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    size="icon"
-                    variant="secondary"
-                    onClick={() => handleLike(image._id)}
-                  >
-                    <Heart className="h-4 w-4" />
-                  </Button>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {isLoading
+            ? Array.from({ length: 6 }).map((_, i) => (
+                <Skeleton key={i} className="h-[300px] w-full" />
+              ))
+            : images.map((image) => (
+                <div key={image._id} className="group relative">
+                  <img
+                    src={image.imageUrl}
+                    alt={image.prompt}
+                    className="h-[300px] w-full rounded-lg object-cover"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center gap-4 rounded-lg bg-black bg-opacity-50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                    <Button
+                      size="icon"
+                      variant="secondary"
+                      onClick={() => window.open(image.imageUrl, "_blank")}
+                    >
+                      <Download className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      size="icon"
+                      variant="secondary"
+                      onClick={() => handleLike(image._id)}
+                    >
+                      <Heart className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            ))
-          )}
+              ))}
         </div>
       </main>
     </HydrateClient>

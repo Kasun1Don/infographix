@@ -1,7 +1,9 @@
 import type { TRPCRouterRecord } from "@trpc/server";
-import { publicProcedure } from "../trpc";
 import { z } from "zod";
+
 import { Image } from "@acme/db";
+
+import { publicProcedure } from "../trpc";
 
 export const imageRouter = {
   like: publicProcedure
@@ -13,7 +15,7 @@ export const imageRouter = {
       const image = await Image.findByIdAndUpdate(
         input.imageId,
         { $inc: { likes: 1 } }, // Increment likes field by 1 (mongodb operator)
-        { new: true }  // save the updated document
+        { new: true }, // save the updated document
       );
       if (!image) {
         throw new Error("Image not found");
@@ -22,22 +24,21 @@ export const imageRouter = {
       return { success: true, image };
     }),
 
-  getImages: publicProcedure
-    .query(async () => {
-      try {
-        const images = await Image.find()
-          .sort({ createdAt: -1 }) // Sort by newest first
-          .lean(); // Convert to plain JavaScript objects
+  getImages: publicProcedure.query(async () => {
+    try {
+      const images = await Image.find()
+        .sort({ createdAt: -1 }) // Sort by newest first
+        .lean(); // Convert to plain JavaScript objects
 
-        return {
-          success: true,
-          images: images.map(image => ({
-            ...image,
-            _id: image._id.toString(), // Convert ObjectId to string
-          })),
-        };
-      } catch (error) {
-        throw new Error("Failed to fetch images", { cause: error });
-      }
-    }),
+      return {
+        success: true,
+        images: images.map((image) => ({
+          ...image,
+          _id: image._id.toString(), // Convert ObjectId to string
+        })),
+      };
+    } catch (error) {
+      throw new Error("Failed to fetch images", { cause: error });
+    }
+  }),
 } satisfies TRPCRouterRecord;

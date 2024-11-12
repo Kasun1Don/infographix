@@ -3,7 +3,7 @@ import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
 
 import { cn } from "@acme/ui";
-import { ThemeProvider} from "@acme/ui/theme";
+import { ThemeProvider } from "@acme/ui/theme";
 import { Toaster } from "@acme/ui/toast";
 
 import { TRPCReactProvider } from "~/trpc/react";
@@ -16,9 +16,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "black" },
-  ],
+  themeColor: [{ media: "(prefers-color-scheme: dark)", color: "black" }],
 };
 
 export default function RootLayout(props: { children: React.ReactNode }) {
