@@ -7,7 +7,6 @@ import { Button } from "@acme/ui/button";
 import { Skeleton } from "@acme/ui/skeleton";
 
 import { api } from "~/trpc/react";
-import { HydrateClient } from "~/trpc/server";
 
 interface Image {
   _id: string;
@@ -80,7 +79,6 @@ export default function HomePage() {
   };
 
   return (
-    <HydrateClient>
       <main className="container mx-auto px-4 py-8">
         <form onSubmit={handleGenerate} className="mb-8">
           <div className="flex gap-4">
@@ -123,13 +121,13 @@ export default function HomePage() {
                       variant="secondary"
                       onClick={() => handleLike(image._id)}
                     >
-                      <Heart className="h-4 w-4" />
+                      <Heart className="h-4 w-4"/>
+                      <span className="text-xs ml-1">{image.likes}</span>
                     </Button>
                   </div>
                 </div>
               ))}
         </div>
       </main>
-    </HydrateClient>
   );
 }
