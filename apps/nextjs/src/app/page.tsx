@@ -79,55 +79,55 @@ export default function HomePage() {
   };
 
   return (
-      <main className="container mx-auto px-4 py-8">
-        <form onSubmit={handleGenerate} className="mb-8">
-          <div className="flex gap-4">
-            <input
-              type="text"
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              placeholder="Enter your prompt..."
-              className="flex-1 rounded-lg border px-4 py-2"
-              disabled={generating}
-            />
-            <Button type="submit" disabled={generating}>
-              {generating ? "Generating..." : "Generate"}
-            </Button>
-          </div>
-        </form>
-
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {isLoading
-            ? Array.from({ length: 6 }).map((_, i) => (
-                <Skeleton key={i} className="h-[300px] w-full" />
-              ))
-            : images.map((image) => (
-                <div key={image._id} className="group relative">
-                  <img
-                    src={image.imageUrl}
-                    alt={image.prompt}
-                    className="h-[300px] w-full rounded-lg object-cover"
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center gap-4 rounded-lg bg-black bg-opacity-50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                    <Button
-                      size="icon"
-                      variant="secondary"
-                      onClick={() => window.open(image.imageUrl, "_blank")}
-                    >
-                      <Download className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      size="icon"
-                      variant="secondary"
-                      onClick={() => handleLike(image._id)}
-                    >
-                      <Heart className="h-4 w-4"/>
-                      <span className="text-xs ml-1">{image.likes}</span>
-                    </Button>
-                  </div>
-                </div>
-              ))}
+    <main className="container mx-auto px-4 py-8">
+      <form onSubmit={handleGenerate} className="mb-8">
+        <div className="flex gap-4">
+          <input
+            type="text"
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            placeholder="Enter your prompt..."
+            className="flex-1 rounded-lg border px-4 py-2"
+            disabled={generating}
+          />
+          <Button type="submit" disabled={generating}>
+            {generating ? "Generating..." : "Generate"}
+          </Button>
         </div>
-      </main>
+      </form>
+
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {isLoading
+          ? Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} className="h-[300px] w-full" />
+            ))
+          : images.map((image) => (
+              <div key={image._id} className="group relative">
+                <img
+                  src={image.imageUrl}
+                  alt={image.prompt}
+                  className="h-[300px] w-full rounded-lg object-cover"
+                />
+                <div className="absolute inset-0 flex items-center justify-center gap-4 rounded-lg bg-black bg-opacity-50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                  <Button
+                    size="icon"
+                    variant="secondary"
+                    onClick={() => window.open(image.imageUrl, "_blank")}
+                  >
+                    <Download className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="secondary"
+                    onClick={() => handleLike(image._id)}
+                  >
+                    <Heart className="h-4 w-4" />
+                    <span className="ml-1 text-xs">{image.likes}</span>
+                  </Button>
+                </div>
+              </div>
+            ))}
+      </div>
+    </main>
   );
 }
