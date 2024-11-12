@@ -1,6 +1,7 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import { initTRPC } from "@trpc/server";
 import { z } from "zod";
+
 import { Image } from "@acme/db"; // Replace with your actual Image model import
 
 // Initialize TRPC
@@ -31,7 +32,7 @@ export const imageRouter = {
         const image = await Image.findByIdAndUpdate(
           input.imageId,
           { $inc: { likes: 1 } },
-          { new: true }
+          { new: true },
         );
         if (!image) {
           throw new Error("Image not found");
