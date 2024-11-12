@@ -1,36 +1,52 @@
 import type { TRPCRouterRecord } from "@trpc/server";
+import { initTRPC } from "@trpc/server";
 import { z } from "zod";
+import { Image } from "@acme/db"; // Replace with your actual Image model import
 
-import { Image } from "@acme/db";
+// Initialize TRPC
+const t = initTRPC.create();
 
-import { publicProcedure } from "../trpc";
+// Helper for public procedures with centralized error logging
+const publicProcedure = t.procedure.use(async ({ path, next }) => {
+  try {
+    return await next();
+  } catch (error) {
+    console.error(`Error in TRPC route ${path}:`, error);
+    throw new Error(`Failed in route ${path}`);
+  }
+});
 
+// Define the router
 export const imageRouter = {
+  // Test endpoint to ensure serverless environment is working correctly
+  ping: publicProcedure.query(() => {
+    return { message: "pong" };
+  }),
+
+  // Increment 'likes' for an image
   like: publicProcedure
-    // Validate input with imageId as a required string
     .input(z.object({ imageId: z.string() }))
     .mutation(async ({ input }) => {
-      // Find image by ID and increment likes count
-      // Returns the updated document due to { new: true }
-      const image = await Image.findByIdAndUpdate(
-        input.imageId,
-        { $inc: { likes: 1 } }, // Increment likes field by 1 (mongodb operator)
-        { new: true }, // save the updated document
-      );
-      if (!image) {
-        throw new Error("Image not found");
+      try {
+        const image = await Image.findByIdAndUpdate(
+          input.imageId,
+          { $inc: { likes: 1 } },
+          { new: true }
+        );
+        if (!image) {
+          throw new Error("Image not found");
+        }
+        return { success: true, image };
+      } catch (error) {
+        console.error("Like mutation error:", error);
+        throw new Error("Failed to like image");
       }
-
-      return { success: true, image };
     }),
 
+  // Retrieve images
   getImages: publicProcedure.query(async () => {
     try {
-      const images = await Image.find()
-        .sort({ createdAt: -1 })
-        .lean()
-        .exec();
-
+      const images = await Image.find().sort({ createdAt: -1 }).lean().exec();
       return {
         success: true,
         images: images.map((image) => ({
@@ -40,7 +56,7 @@ export const imageRouter = {
         })),
       };
     } catch (error) {
-      console.error('Image fetch error:', error);
+      console.error("Image fetch error:", error);
       throw new Error("Failed to fetch images");
     }
   }),
